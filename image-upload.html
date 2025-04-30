@@ -1,0 +1,2042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Project Image Management</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --primary-dark: #2980b9;
+            --secondary: #2c3e50;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --light: #f5f5f5;
+            --dark: #34495e;
+            --border: #ddd;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light);
+            color: var(--secondary);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--secondary);
+            color: white;
+            padding: 1rem;
+            position: relative;
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1, h2, h3, h4 {
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        header h1 {
+            color: white;
+            margin-bottom: 0;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+        }
+        
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .card-body {
+            padding: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        th {
+            background-color: #f8f9fa;
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--primary);
+            font-weight: bold;
+        }
+        
+        /* Login/Register styles */
+        .auth-container {
+            max-width: 400px;
+            margin: 50px auto;
+        }
+        
+        /* Dashboard styles */
+        .dashboard {
+            display: none;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card h3 {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card p {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--secondary);
+        }
+        
+        .projects {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .project-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .project-header {
+            padding: 15px;
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .project-body {
+            padding: 15px;
+        }
+        
+        .project-footer {
+            padding: 10px 15px;
+            background-color: #f8f9fa;
+            border-top: 1px solid var(--border);
+            font-size: 13px;
+            color: #777;
+        }
+        
+        .user-badges {
+            display: flex;
+            margin-top: 10px;
+        }
+        
+        .user-badge {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: -10px;
+            border: 2px solid white;
+        }
+        
+        /* Project detail styles */
+        .project-detail {
+            display: none;
+        }
+        
+        .upload-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .upload-slot {
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .upload-slot.assigned {
+            border-color: var(--primary);
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .upload-slot img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .upload-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: var(--secondary);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        
+        .upload-status {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: var(--warning);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        
+        .upload-status.completed {
+            background-color: var(--success);
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .gallery-item {
+            height: 250px;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .user-mgmt {
+            display: none;
+        }
+        
+        .project-mgmt {
+            display: none;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
+        .modal-header {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-body {
+            padding: 15px;
+        }
+        
+        .modal-footer {
+            padding: 15px;
+            border-top: 1px solid var(--border);
+            text-align: right;
+        }
+        
+        .close {
+            cursor: pointer;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        #userMenu {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background: white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            border-radius: 4px;
+            width: 200px;
+            z-index: 100;
+            display: none;
+        }
+        
+        #userMenu ul {
+            list-style: none;
+        }
+        
+        #userMenu ul li {
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+        }
+        
+        #userMenu ul li:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .user-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .user-item .user-details {
+            flex-grow: 1;
+            margin-left: 15px;
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .search-bar {
+            margin-bottom: 20px;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .upload-grid, .gallery {
+                grid-template-columns: 1fr;
+            }
+            
+            .projects {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .input-file {
+            display: none;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #777;
+        }
+        
+        .breadcrumb span {
+            margin: 0 5px;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Section -->
+    <div id="loginSection" class="auth-container">
+        <div class="card">
+            <div class="card-header">
+                <h2>Login</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" class="form-control" placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="Enter password">
+                </div>
+                <button id="loginBtn" class="btn">Login</button>
+                <p style="margin-top: 15px; text-align: center;">
+                    Don't have an account? <a href="#" id="showRegister">Register</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Section -->
+    <div id="registerSection" class="auth-container hidden">
+        <div class="card">
+            <div class="card-header">
+                <h2>Register</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="regUsername">Username</label>
+                    <input type="text" id="regUsername" class="form-control" placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Email</label>
+                    <input type="email" id="regEmail" class="form-control" placeholder="Enter email">
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Password</label>
+                    <input type="password" id="regPassword" class="form-control" placeholder="Enter password">
+                </div>
+                <div class="form-group">
+                    <label for="regRole">Role</label>
+                    <select id="regRole" class="form-control">
+                        <option value="client">Client</option>
+                        <option value="contributor">Contributor</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <button id="registerBtn" class="btn">Register</button>
+                <p style="margin-top: 15px; text-align: center;">
+                    Already have an account? <a href="#" id="showLogin">Login</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application Section -->
+    <div id="appSection" class="hidden">
+        <header>
+            <div class="header-container">
+                <h1>Client Project Image Management</h1>
+                <div class="user-info" id="currentUser">
+                    <div class="avatar">JS</div>
+                    <div>John Smith</div>
+                </div>
+            </div>
+        </header>
+
+        <div id="userMenu">
+            <ul>
+                <li id="profileMenuItem">Profile</li>
+                <li id="logoutMenuItem">Logout</li>
+            </ul>
+        </div>
+
+        <div class="container">
+            <!-- Dashboard Section -->
+            <div id="dashboardSection" class="dashboard">
+                <h2>Dashboard</h2>
+                
+                <div class="stats">
+                    <div class="stat-card">
+                        <h3>Active Projects</h3>
+                        <p id="activeProjectsCount">3</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Contributors</h3>
+                        <p id="contributorsCount">5</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Completed Projects</h3>
+                        <p id="completedProjectsCount">2</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Pending Uploads</h3>
+                        <p id="pendingUploadsCount">7</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h3>Projects</h3>
+                            <button id="createProjectBtn" class="btn">Create Project</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="search-bar">
+                            <input type="text" class="form-control" placeholder="Search projects...">
+                        </div>
+                        <div class="filters">
+                            <select class="form-control">
+                                <option>All Status</option>
+                                <option>In Progress</option>
+                                <option>Completed</option>
+                                <option>On Hold</option>
+                            </select>
+                            <select class="form-control">
+                                <option>All Clients</option>
+                                <option>ABC Corp</option>
+                                <option>XYZ Inc</option>
+                            </select>
+                        </div>
+                        <div class="projects" id="projectsContainer">
+                            <!-- Projects will be dynamically added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Detail Section -->
+            <div id="projectDetailSection" class="project-detail">
+                <div class="breadcrumb">
+                    <a href="#" id="backToDashboard">Dashboard</a>
+                    <span>></span>
+                    <span id="currentProjectName">Project Name</span>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h2 id="projectTitle">Project Title</h2>
+                            <div>
+                                <button id="projectSettingsBtn" class="btn">Settings</button>
+                                <button id="inviteUserBtn" class="btn">Invite User</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p id="projectDescription">Project description goes here.</p>
+                        <div style="margin-top: 20px;">
+                            <h3>Image Uploads</h3>
+                            <div class="upload-grid" id="uploadGrid">
+                                <!-- Upload slots will be dynamically added here -->
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 30px;">
+                            <h3>Image Gallery</h3>
+                            <div class="gallery" id="imageGallery">
+                                <!-- Gallery items will be dynamically added here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Management Section -->
+            <div id="userManagementSection" class="user-mgmt">
+                <h2>User Management</h2>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h3>Users</h3>
+                            <button id="addUserBtn" class="btn">Add User</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="search-bar">
+                            <input type="text" class="form-control" placeholder="Search users...">
+                        </div>
+                        <div class="filters">
+                            <select class="form-control">
+                                <option>All Roles</option>
+                                <option>Admin</option>
+                                <option>Client</option>
+                                <option>Contributor</option>
+                            </select>
+                        </div>
+                        <div id="usersList">
+                            <!-- Users will be dynamically added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Management Section -->
+            <div id="projectManagementSection" class="project-mgmt">
+                <h2>Project Management</h2>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h3>All Projects</h3>
+                            <button id="addProjectBtn" class="btn">Add Project</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="search-bar">
+                            <input type="text" class="form-control" placeholder="Search projects...">
+                        </div>
+                        <div class="filters">
+                            <select class="form-control">
+                                <option>All Status</option>
+                                <option>In Progress</option>
+                                <option>Completed</option>
+                                <option>On Hold</option>
+                            </select>
+                            <select class="form-control">
+                                <option>All Clients</option>
+                                <option>ABC Corp</option>
+                                <option>XYZ Inc</option>
+                            </select>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Project Name</th>
+                                    <th>Client</th>
+                                    <th>Created Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="projectsTable">
+                                <!-- Projects will be dynamically added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Create Project Modal -->
+    <div id="createProjectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Project</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="projectName">Project Name</label>
+                    <input type="text" id="projectName" class="form-control" placeholder="Enter project name">
+                </div>
+                <div class="form-group">
+                    <label for="projectDesc">Description</label>
+                    <textarea id="projectDesc" class="form-control" rows="3" placeholder="Enter project description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="clientSelect">Client</label>
+                    <select id="clientSelect" class="form-control">
+                        <option value="">Select Client</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="requiredImages">Required Images</label>
+                    <input type="number" id="requiredImages" class="form-control" min="1" max="4" value="4">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="cancelCreateProject">Cancel</button>
+                <button class="btn btn-success" id="saveProjectBtn">Create Project</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invite User Modal -->
+    <div id="inviteUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Invite User to Project</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="userSelect">Select User</label>
+                    <select id="userSelect" class="form-control">
+                        <option value="">Select User</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="slotNumber">Assign to Slot</label>
+                    <select id="slotNumber" class="form-control">
+                        <option value="1">Slot 1</option>
+                        <option value="2">Slot 2</option>
+                        <option value="3">Slot 3</option>
+                        <option value="4">Slot 4</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="cancelInviteUser">Cancel</button>
+                <button class="btn btn-success" id="inviteUserSaveBtn">Invite User</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Image Modal -->
+    <div id="uploadImageModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Upload Image</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="imageUpload">Select Image</label>
+                    <input type="file" id="imageUpload" class="form-control" accept="image/*">
+                </div>
+                <div style="margin-top: 15px;">
+                    <div id="imagePreview" style="max-height: 200px; text-align: center; display: none;">
+                        <img id="previewImg" style="max-width: 100%; max-height: 200px;">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="cancelImageUpload">Cancel</button>
+                <button class="btn btn-success" id="saveImageBtn">Upload Image</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock database for demonstration
+        const db = {
+            users: [
+                { id: 1, username: 'admin', password: 'admin123', email: 'admin@example.com', role: 'admin', name: 'Admin User', initials: 'AU' },
+                { id: 2, username: 'client1', password: 'client123', email: 'client1@example.com', role: 'client', name: 'John Client', initials: 'JC' },
+                { id: 3, username: 'user1', password: 'user123', email: 'user1@example.com', role: 'contributor', name: 'Alice Smith', initials: 'AS' },
+                { id: 4, username: 'user2', password: 'user123', email: 'user2@example.com', role: 'contributor', name: 'Bob Johnson', initials: 'BJ' },
+                { id: 5, username: 'user3', password: 'user123', email: 'user3@example.com', role: 'contributor', name: 'Carol Davis', initials: 'CD' },
+                { id: 6, username: 'user4', password: 'user123', email: 'user4@example.com', role: 'contributor', name: 'Dave Wilson', initials: 'DW' }
+            ],
+            projects: [
+                { 
+                    id: 1, 
+                    name: 'Product Launch Photos', 
+                    description: 'Professional photos needed for the new product launch campaign.',
+                    clientId: 2,
+                    status: 'In Progress',
+                    createdDate: '2025-04-15',
+                    requiredImages: 4,
+                    slots: [
+                        { id: 1, assignedTo: 3, status: 'completed', imageUrl: '/api/placeholder/500/400' },
+                        { id: 2, assignedTo: 4, status: 'pending', imageUrl: null },
+                        { id: 3, assignedTo: 5, status: 'completed', imageUrl: '/api/placeholder/500/400' },
+                        { id: 4, assignedTo: 6, status: 'pending', imageUrl: null }
+                    ]
+                },
+                { 
+                    id: 2, 
+                    name: 'Website Redesign Assets', 
+                    description: 'Visual assets needed for the company website redesign.',
+                    clientId: 2,
+                    status: 'In Progress',
+                    createdDate: '2025-04-20',
+                    requiredImages: 4,
+                    slots: [
+                        { id: 1, assignedTo: 4, status: 'completed', imageUrl: '/api/placeholder/500/400' },
+                        { id: 2, assignedTo: 3, status: 'pending', imageUrl: null },
+                        { id: 3, assignedTo: 6, status: 'pending', imageUrl: null },
+                        { id: 4, assignedTo: 5, status: 'completed', imageUrl: '/api/placeholder/500/400' }
+                    ]
+                },
+                { 
+                    id: 3, 
+                    name: 'Annual Report Images', 
+                    description: 'Professional corporate photography for the annual report.',
+                    clientId: 2,
+                    status: 'Completed',
+                    createdDate: '2025-03-10',
+                    requiredImages: 4,
+                    slots: [
+                        { id: 1, assignedTo: 3, status: 'completed', imageUrl: '/api/placeholder/500/400' },
+                        { id: 2, assignedTo: 4, status: 'completed', imageUrl: '/api/placeholder/500/400' },
+                        { id: 3, assignedTo: 5, status: 'completed', imageUrl: '/api/placeholder/500/400' },
+                        { id: 4, assignedTo: 6, status: 'completed', imageUrl: '/api/placeholder/500/400' }
+                    ]
+                }
+            ]
+        };
+
+        // Current logged in user
+        let currentUser = null;
+        let currentProject = null;
+        let currentUploadSlot = null;
+
+        // DOM Elements
+        const loginSection = document.getElementById('loginSection');
+        const registerSection = document.getElementById('registerSection');
+        const appSection = document.getElementById('appSection');
+        const dashboardSection = document.getElementById('dashboardSection');
+        const projectDetailSection = document.getElementById('projectDetailSection');
+        const userManagementSection = document.getElementById('userManagementSection');
+        const projectManagementSection = document.getElementById('projectManagementSection');
+
+        // Auth navigation
+        document.getElementById('showRegister').addEventListener('click', function(e) {
+            e.preventDefault();
+            loginSection.classList.add('hidden');
+            registerSection.classList.remove('hidden');
+        });
+
+        document.getElementById('showLogin').addEventListener('click', function(e) {
+            e.preventDefault();
+            registerSection.classList.add('hidden');
+            loginSection.classList.remove('hidden');
+        });
+
+        // Login functionality
+        document.getElementById('loginBtn').addEventListener('click', function() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            const user = db.users.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                loginSection.classList.add('hidden');
+                appSection.classList.remove('hidden');
+                
+                // Update user info display
+                const currentUserEl = document.getElementById('currentUser');
+                currentUserEl.querySelector('.avatar').textContent = user.initials;
+                currentUserEl.querySelector('div:last-child').textContent = user.name;
+                
+                // Show appropriate section based on user role
+                if (user.role === 'admin') {
+                    showSection(dashboardSection);
+                    loadAdminDashboard();
+                } else if (user.role === 'client') {
+                    showSection(dashboardSection);
+                    loadClientDashboard();
+                } else {
+                    showSection(dashboardSection);
+                    loadContributorDashboard();
+                }
+            } else {
+                alert('Invalid username or password');
+            }
+        });
+
+        // Register functionality
+        document.getElementById('registerBtn').addEventListener('click', function() {
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const role = document.getElementById('regRole').value;
+            
+            if (!username || !email || !password) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            // Check if username already exists
+            if (db.users.some(u => u.username === username)) {
+                alert('Username already exists');
+                return;
+            }
+            
+            // Create new user
+            const newUser = {
+                id: db.users.length + 1,
+                username,
+                email,
+                password,
+                role,
+                name: username, // Using username as name for simplicity
+                initials: username.substring(0, 2).toUpperCase()
+            };
+            
+            db.users.push(newUser);
+            alert('Registration successful! Please login.');
+            
+            // Reset form and show login
+            document.getElementById('regUsername').value = '';
+            document.getElementById('regEmail').value = '';
+            document.getElementById('regPassword').value = '';
+            registerSection.classList.add('hidden');
+            loginSection.classList.remove('hidden');
+        });
+
+        // User menu toggle
+        document.getElementById('currentUser').addEventListener('click', function() {
+            const userMenu = document.getElementById('userMenu');
+            if (userMenu.style.display === 'block') {
+                userMenu.style.display = 'none';
+            } else {
+                userMenu.style.display = 'block';
+            }
+        });
+
+        // Logout functionality
+        document.getElementById('logoutMenuItem').addEventListener('click', function() {
+            currentUser = null;
+            appSection.classList.add('hidden');
+            loginSection.classList.remove('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('userMenu').style.display = 'none';
+        });
+
+        // Back to dashboard
+        document.getElementById('backToDashboard').addEventListener('click', function(e) {
+            e.preventDefault();
+            showSection(dashboardSection);
+        });
+
+        // Utility function to show only one section
+        function showSection(section) {
+            // Hide all sections
+            dashboardSection.style.display = 'none';
+            projectDetailSection.style.display = 'none';
+            userManagementSection.style.display = 'none';
+            projectManagementSection.style.display = 'none';
+            
+            // Show the requested section
+            section.style.display = 'block';
+        }
+
+        // Load projects for admin dashboard
+        function loadAdminDashboard() {
+            // Load stats
+            document.getElementById('activeProjectsCount').textContent = 
+                db.projects.filter(p => p.status === 'In Progress').length;
+            document.getElementById('completedProjectsCount').textContent = 
+                db.projects.filter(p => p.status === 'Completed').length;
+            document.getElementById('contributorsCount').textContent = 
+                db.users.filter(u => u.role === 'contributor').length;
+            
+            // Calculate pending uploads
+            let pendingUploads = 0;
+            db.projects.forEach(project => {
+                project.slots.forEach(slot => {
+                    if (slot.status === 'pending') {
+                        pendingUploads++;
+                    }
+                });
+            });
+            document.getElementById('pendingUploadsCount').textContent = pendingUploads;
+            
+            // Load projects
+            loadProjects();
+        }
+
+        // Load projects for client dashboard
+        function loadClientDashboard() {
+            // Filter projects by client
+            const clientProjects = db.projects.filter(p => p.clientId === currentUser.id);
+            
+            // Load stats
+            document.getElementById('activeProjectsCount').textContent = 
+                clientProjects.filter(p => p.status === 'In Progress').length;
+            document.getElementById('completedProjectsCount').textContent = 
+                clientProjects.filter(p => p.status === 'Completed').length;
+            document.getElementById('contributorsCount').textContent = 
+                db.users.filter(u => u.role === 'contributor').length;
+            
+            // Calculate pending uploads
+            let pendingUploads = 0;
+            clientProjects.forEach(project => {
+                project.slots.forEach(slot => {
+                    if (slot.status === 'pending') {
+                        pendingUploads++;
+                    }
+                });
+            });
+            document.getElementById('pendingUploadsCount').textContent = pendingUploads;
+            
+            // Load only client's projects
+            loadProjects(clientProjects);
+        }
+
+        // Load projects for contributor dashboard
+        function loadContributorDashboard() {
+            // Find projects where contributor is assigned
+            const contributorProjects = [];
+            db.projects.forEach(project => {
+                project.slots.forEach(slot => {
+                    if (slot.assignedTo === currentUser.id) {
+                        if (!contributorProjects.includes(project)) {
+                            contributorProjects.push(project);
+                        }
+                    }
+                });
+            });
+            
+            // Load stats
+            document.getElementById('activeProjectsCount').textContent = 
+                contributorProjects.filter(p => p.status === 'In Progress').length;
+            document.getElementById('completedProjectsCount').textContent = 
+                contributorProjects.filter(p => p.status === 'Completed').length;
+            
+            // Calculate pending uploads for this contributor
+            let pendingUploads = 0;
+            contributorProjects.forEach(project => {
+                project.slots.forEach(slot => {
+                    if (slot.assignedTo === currentUser.id && slot.status === 'pending') {
+                        pendingUploads++;
+                    }
+                });
+            });
+            document.getElementById('pendingUploadsCount').textContent = pendingUploads;
+            document.getElementById('contributorsCount').textContent = '-';
+            
+            // Load only contributor's projects
+            loadProjects(contributorProjects);
+        }
+
+        // Load projects into the dashboard
+        function loadProjects(projectsList = null) {
+            const projects = projectsList || db.projects;
+            const projectsContainer = document.getElementById('projectsContainer');
+            projectsContainer.innerHTML = '';
+            
+            projects.forEach(project => {
+                const client = db.users.find(u => u.id === project.clientId);
+                const completedSlots = project.slots.filter(s => s.status === 'completed').length;
+                const totalSlots = project.slots.length;
+                
+                const projectCard = document.createElement('div');
+                projectCard.className = 'project-card';
+                projectCard.dataset.projectId = project.id;
+                
+                projectCard.innerHTML = `
+                    <div class="project-header">
+                        <h3>${project.name}</h3>
+                    </div>
+                    <div class="project-body">
+                        <p>${project.description}</p>
+                        <div style="margin-top: 10px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>Client: ${client.name}</div>
+                                <div>Status: ${project.status}</div>
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <div>Progress: ${completedSlots}/${totalSlots} images</div>
+                                <div style="height: 8px; background-color: #eee; border-radius: 4px; margin-top: 5px;">
+                                    <div style="height: 100%; width: ${(completedSlots/totalSlots)*100}%; background-color: var(--success); border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="user-badges">
+                            ${project.slots.map(slot => {
+                                const user = db.users.find(u => u.id === slot.assignedTo);
+                                return `<div class="user-badge" title="${user ? user.name : 'Unassigned'}">${user ? user.initials : '?'}</div>`;
+                            }).join('')}
+                        </div>
+                    </div>
+                    <div class="project-footer">
+                        Created: ${project.createdDate}
+                    </div>
+                `;
+                
+                projectCard.addEventListener('click', function() {
+                    const projectId = parseInt(this.dataset.projectId);
+                    openProject(projectId);
+                });
+                
+                projectsContainer.appendChild(projectCard);
+            });
+        }
+
+        // Open a specific project
+        function openProject(projectId) {
+            currentProject = db.projects.find(p => p.id === projectId);
+            if (!currentProject) return;
+            
+            // Update project details
+            document.getElementById('currentProjectName').textContent = currentProject.name;
+            document.getElementById('projectTitle').textContent = currentProject.name;
+            document.getElementById('projectDescription').textContent = currentProject.description;
+            
+            // Load upload slots
+            loadUploadSlots();
+            
+            // Load gallery
+            loadGallery();
+            
+            // Show project detail section
+            showSection(projectDetailSection);
+        }
+// Replace the loadUploadSlots function with this improved version
+function loadUploadSlots() {
+    const uploadGrid = document.getElementById('uploadGrid');
+    uploadGrid.innerHTML = '';
+    
+    currentProject.slots.forEach(slot => {
+        const user = db.users.find(u => u.id === slot.assignedTo);
+        const isCurrentUserSlot = user && user.id === currentUser.id;
+        
+        const uploadSlot = document.createElement('div');
+        uploadSlot.className = `upload-slot ${user ? 'assigned' : ''}`;
+        uploadSlot.dataset.slotId = slot.id;
+        
+        if (slot.imageUrl) {
+            // Has image
+            uploadSlot.innerHTML = `
+                <div class="upload-label">Slot ${slot.id} - ${user ? user.name : 'Unassigned'}</div>
+                <img src="${slot.imageUrl}" alt="Uploaded image">
+                <div class="upload-status completed">Completed</div>
+            `;
+        } else {
+            // No image yet
+            uploadSlot.innerHTML = `
+                <div class="upload-label">Slot ${slot.id} - ${user ? user.name : 'Unassigned'}</div>
+                <div style="text-align: center;">
+                    <div style="font-size: 40px; color: #ccc;">📷</div>
+                    <div style="margin-top: 10px;">No image uploaded</div>
+                    ${isCurrentUserSlot ? 
+                        `<label class="btn upload-btn" data-slot-id="${slot.id}">
+                            Upload Image
+                            <input type="file" class="input-file" accept="image/*">
+                        </label>` 
+                        : ''}
+                </div>
+                <div class="upload-status">Pending</div>
+            `;
+        }
+        
+        uploadGrid.appendChild(uploadSlot);
+    });
+    
+    // Add event listeners for all upload buttons
+    document.querySelectorAll('.upload-btn').forEach(btn => {
+        const fileInput = btn.querySelector('.input-file');
+        const slotId = parseInt(btn.dataset.slotId);
+        
+        fileInput.addEventListener('change', function(e) {
+            if (this.files && this.files[0]) {
+                // Find the slot
+                const slot = currentProject.slots.find(s => s.id === slotId);
+                if (slot) {
+                    // Set as current upload slot and open modal
+                    currentUploadSlot = slot;
+                    
+                    // Display preview in modal
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('previewImg').src = e.target.result;
+                        document.getElementById('imagePreview').style.display = 'block';
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                    
+                    // Open modal
+                    openUploadModal();
+                }
+            }
+        });
+    });
+}
+
+// Update the openUploadModal function
+function openUploadModal() {
+    // Open modal
+    openModal('uploadImageModal');
+}
+
+// Update the saveImageBtn event listener
+document.getElementById('saveImageBtn').addEventListener('click', function() {
+    const fileInput = document.getElementById('imageUpload');
+    const file = fileInput.files[0];
+
+    if (!file || !currentUploadSlot) {
+        alert('Please select an image and a valid slot');
+        return;
+    }
+
+    const slotIndex = currentProject.slots.findIndex(s => s.id === currentUploadSlot.id);
+    if (slotIndex === -1) return;
+
+    // Simulate async upload
+    uploadImage(file, currentUploadSlot).then(imageUrl => {
+        currentProject.slots[slotIndex].imageUrl = imageUrl;
+        currentProject.slots[slotIndex].status = 'completed';
+
+        // Refresh UI
+        loadUploadSlots();
+        loadGallery();
+        closeModal('uploadImageModal');
+
+        // Check if all are done
+        const allCompleted = currentProject.slots.every(slot => slot.status === 'completed');
+        if (allCompleted) {
+            currentProject.status = 'Completed';
+            alert('Congratulations! All images for this project have been uploaded.');
+        }
+    }).catch(error => {
+        console.error(error);
+        alert('Image upload failed');
+    });
+});
+
+
+// Add this CSS to the style section
+// Add this to your existing CSS in the <style> tag
+`
+.upload-btn {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.input-file {
+    position: absolute;
+    font-size: 100px;
+    opacity: 0;
+    right: 0;
+    top: 0;
+    cursor: pointer;
+}
+`
+ 
+        // Load gallery images
+        function loadGallery() {
+            const imageGallery = document.getElementById('imageGallery');
+            imageGallery.innerHTML = '';
+            
+            currentProject.slots.forEach(slot => {
+                const user = db.users.find(u => u.id === slot.assignedTo);
+                
+                const galleryItem = document.createElement('div');
+                galleryItem.className = 'gallery-item';
+                
+                if (slot.imageUrl) {
+                    galleryItem.innerHTML = `
+                        <div class="user-label">User ${slot.id} - ${user ? user.name : 'Unassigned'}</div>
+                        <img src="${slot.imageUrl}" alt="User ${slot.id} image">
+                    `;
+                } else {
+                    galleryItem.innerHTML = `
+                        <div class="user-label">User ${slot.id} - ${user ? user.name : 'Unassigned'}</div>
+                        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #aaa;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 40px;">📷</div>
+                                <div>Pending Upload</div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                imageGallery.appendChild(galleryItem);
+            });
+        }
+
+        // Create Project Button
+        document.getElementById('createProjectBtn').addEventListener('click', function() {
+            openCreateProjectModal();
+        });
+
+        // Invite User Button
+        document.getElementById('inviteUserBtn').addEventListener('click', function() {
+            openInviteUserModal();
+        });
+
+        // Modal functionality
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Close buttons for modals
+        document.querySelectorAll('.close').forEach(closeBtn => {
+            closeBtn.addEventListener('click', function() {
+                this.closest('.modal').style.display = 'none';
+            });
+        });
+
+        // Cancel buttons for modals
+        document.getElementById('cancelCreateProject').addEventListener('click', function() {
+            closeModal('createProjectModal');
+        });
+
+        document.getElementById('cancelInviteUser').addEventListener('click', function() {
+            closeModal('inviteUserModal');
+        });
+
+        document.getElementById('cancelImageUpload').addEventListener('click', function() {
+            closeModal('uploadImageModal');
+        });
+
+        // Create Project Modal
+        function openCreateProjectModal() {
+            // Populate client dropdown
+            const clientSelect = document.getElementById('clientSelect');
+            clientSelect.innerHTML = '<option value="">Select Client</option>';
+            
+            const clients = db.users.filter(u => u.role === 'client');
+            clients.forEach(client => {
+                const option = document.createElement('option');
+                option.value = client.id;
+                option.textContent = client.name;
+                clientSelect.appendChild(option);
+            });
+            
+            // Open modal
+            openModal('createProjectModal');
+        }
+
+        // Save Project Button
+        document.getElementById('saveProjectBtn').addEventListener('click', function() {
+            const projectName = document.getElementById('projectName').value;
+            const projectDesc = document.getElementById('projectDesc').value;
+            const clientId = parseInt(document.getElementById('clientSelect').value);
+            const requiredImages = parseInt(document.getElementById('requiredImages').value);
+            
+            if (!projectName || !projectDesc || !clientId) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Create new project
+            const newProject = {
+                id: db.projects.length + 1,
+                name: projectName,
+                description: projectDesc,
+                clientId: clientId,
+                status: 'In Progress',
+                createdDate: new Date().toISOString().split('T')[0],
+                requiredImages: requiredImages,
+                slots: []
+            };
+            
+            // Create empty slots
+            for (let i = 1; i <= requiredImages; i++) {
+                newProject.slots.push({
+                    id: i,
+                    assignedTo: null,
+                    status: 'pending',
+                    imageUrl: null
+                });
+            }
+            
+            // Add to database
+            db.projects.push(newProject);
+            
+            // Reload projects
+            if (currentUser.role === 'admin') {
+                loadAdminDashboard();
+            } else if (currentUser.role === 'client') {
+                loadClientDashboard();
+            } else {
+                loadContributorDashboard();
+            }
+            
+            // Close modal
+            closeModal('createProjectModal');
+            
+            // Clear form
+            document.getElementById('projectName').value = '';
+            document.getElementById('projectDesc').value = '';
+            document.getElementById('clientSelect').value = '';
+            document.getElementById('requiredImages').value = '4';
+        });
+
+        // Invite User Modal
+        function openInviteUserModal() {
+            // Populate user dropdown
+            const userSelect = document.getElementById('userSelect');
+            userSelect.innerHTML = '<option value="">Select User</option>';
+            
+            const users = db.users.filter(u => u.role === 'contributor');
+            users.forEach(user => {
+                const option = document.createElement('option');
+                option.value = user.id;
+                option.textContent = user.name;
+                userSelect.appendChild(option);
+            });
+            
+            // Populate slot dropdown based on available slots
+            const slotNumber = document.getElementById('slotNumber');
+            slotNumber.innerHTML = '';
+            
+            currentProject.slots.forEach(slot => {
+                const option = document.createElement('option');
+                option.value = slot.id;
+                
+                if (slot.assignedTo) {
+                    const assignedUser = db.users.find(u => u.id === slot.assignedTo);
+                    option.textContent = `Slot ${slot.id} - Assigned to ${assignedUser ? assignedUser.name : 'Unknown'}`;
+                } else {
+                    option.textContent = `Slot ${slot.id} - Unassigned`;
+                }
+                
+                slotNumber.appendChild(option);
+            });
+            
+            // Open modal
+            openModal('inviteUserModal');
+        }
+
+        // Save Invite Button
+        document.getElementById('inviteUserSaveBtn').addEventListener('click', function() {
+            const userId = parseInt(document.getElementById('userSelect').value);
+            const slotId = parseInt(document.getElementById('slotNumber').value);
+            
+            if (!userId || !slotId) {
+                alert('Please select a user and slot');
+                return;
+            }
+            
+            // Update slot assignment
+            const slotIndex = currentProject.slots.findIndex(s => s.id === slotId);
+            if (slotIndex !== -1) {
+                currentProject.slots[slotIndex].assignedTo = userId;
+            }
+            
+            // Reload upload slots and gallery
+            loadUploadSlots();
+            loadGallery();
+            
+            // Close modal
+            closeModal('inviteUserModal');
+        });
+
+
+// These functions need to be added to your existing script
+
+// Function to handle actual image uploads
+function uploadImage(file, slot) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+        if (!file) {
+            reject('No file selected');
+            return;
+        }
+        
+        // Create a FormData object to handle the file upload
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('slotId', slot.id);
+        formData.append('projectId', currentProject.id);
+        
+        // In a real application, you would send this to your server
+        // For this demo, we'll simulate a file upload with a timeout
+        setTimeout(() => {
+            // Create a data URL from the file for preview
+            const reader = new FileReader();
+	    const formData = new FormData();
+            formData.append('image', file);
+
+	    fetch('http://localhost:3000/upload', {
+  	  	  method: 'POST',
+    		  body: formData
+	    })
+	   .then(response => response.json())
+ 	   .then(data => {
+             if (data.success) {
+                 slot.imageUrl = data.imageUrl;
+                 slot.status = 'completed';
+                 loadUploadSlots();
+                 loadGallery();
+
+                 if (currentProject.slots.every(s => s.status === 'completed')) {
+                     currentProject.status = 'Completed';
+                     alert('All images uploaded!');
+                 }
+             } else {
+                 alert('Upload failed: ' + data.error);
+             }
+         })
+        .catch(err => {
+            console.error(err);
+            alert('Image upload failed.');
+         });
+
+            reader.onerror = function() {
+                reject('Error reading file');
+            };
+            reader.readAsDataURL(file);
+        }, 1000);
+        
+        // Real implementation would use fetch or XMLHttpRequest:
+        /*
+        fetch('/api/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                resolve(data.imageUrl);
+            } else {
+                reject(data.error);
+            }
+        })
+        .catch(error => reject(error));
+        */
+            resolve(e.target.result); // Simulate image URL
+        };
+        reader.onerror = () => reject('Failed to read file');
+        reader.readAsDataURL(file);
+    });
+}
+// Function to update client profile
+function updateClientProfile(clientData) {
+    return new Promise((resolve, reject) => {
+        if (!clientData) {
+            reject('No client data provided');
+            return;
+        }
+        
+        // In a real application, you would send this to your server
+        // For this demo, we'll simulate a profile update with a timeout
+        setTimeout(() => {
+            try {
+                // Find the client in the database and update their information
+                const userIndex = db.users.findIndex(u => u.id === clientData.id);
+                if (userIndex !== -1) {
+                    // Update user object with new data
+                    db.users[userIndex] = {
+                        ...db.users[userIndex],
+                        ...clientData
+                    };
+                    
+                    // Update the current user if it's the same user
+                    if (currentUser && currentUser.id === clientData.id) {
+                        currentUser = db.users[userIndex];
+                        // Update UI to reflect changes
+                        const currentUserEl = document.getElementById('currentUser');
+                        currentUserEl.querySelector('.avatar').textContent = currentUser.initials;
+                        currentUserEl.querySelector('div:last-child').textContent = currentUser.name;
+                    }
+                    
+                    resolve({success: true, message: 'Profile updated successfully'});
+                } else {
+                    reject('Client not found');
+                }
+            } catch (error) {
+                reject(error.message);
+            }
+        }, 1000);
+        
+        // Real implementation would use fetch or XMLHttpRequest:
+        /*
+        fetch('/api/clients/' + clientData.id, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(clientData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                resolve(data);
+            } else {
+                reject(data.error);
+            }
+        })
+        .catch(error => reject(error));
+        */
+    });
+}
+
+// Add loading indicator functions
+function showLoading(element) {
+    // Create and append a loading spinner
+    const spinner = document.createElement('div');
+    spinner.className = 'loading-spinner';
+    spinner.innerHTML = `
+        <div style="
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        "></div>
+        <style>
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
+    `;
+    
+    // Store original content
+    const originalContent = element.innerHTML;
+    element.dataset.originalContent = originalContent;
+    
+    // Replace with spinner
+    element.innerHTML = '';
+    element.appendChild(spinner);
+    element.disabled = true;
+}
+
+function hideLoading(element) {
+    // Restore original content
+    if (element.dataset.originalContent) {
+        element.innerHTML = element.dataset.originalContent;
+    }
+    element.disabled = false;
+}
+        // Upload Image Modal
+        function openUploadModal() {
+            // Reset preview
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('imageUpload').value = '';
+            
+            // Open modal
+            openModal('uploadImageModal');
+        }
+
+        // Image preview functionality
+        document.getElementById('imageUpload').addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('previewImg').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Save Image Button
+        document.getElementById('saveImageBtn').addEventListener('click', function() {
+            const fileInput = document.getElementById('imageUpload');
+            
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('Please select an image');
+                return;
+            }
+            
+            // In a real application, we would upload the file to a server here
+            // For this demo, we'll simulate a successful upload with a placeholder
+            
+            // Update slot with image URL
+            const slotIndex = currentProject.slots.findIndex(s => s.id === currentUploadSlot.id);
+            if (slotIndex !== -1) {
+                currentProject.slots[slotIndex].imageUrl = '/api/placeholder/500/400';
+                currentProject.slots[slotIndex].status = 'completed';
+            }
+            
+            // Reload upload slots and gallery
+            loadUploadSlots();
+            loadGallery();
+            
+            // Close modal
+            closeModal('uploadImageModal');
+            
+            // Check if all slots are completed
+            const allCompleted = currentProject.slots.every(slot => slot.status === 'completed');
+            if (allCompleted) {
+                currentProject.status = 'Completed';
+                alert('Congratulations! All images for this project have been uploaded.');
+            }
+        });
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            document.querySelectorAll('.modal').forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+
+        // Close user menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.getElementById('userMenu');
+            const currentUserEl = document.getElementById('currentUser');
+            
+            if (!currentUserEl.contains(event.target) && userMenu.style.display === 'block') {
+                userMenu.style.display = 'none';
+            }
+        });
+// This script replaces the existing script section at the bottom of your HTML file
+
+// Tab Navigation
+document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        // Remove active class from all tabs
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        // Add active class to clicked tab
+        this.classList.add('active');
+        
+        // Hide all tab content
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        // Show corresponding tab content
+        const tabId = this.getAttribute('data-tab');
+        document.getElementById(tabId).classList.add('active');
+    });
+});
+
+// Modal Controls
+function setupModal(triggerBtnId, modalId, closeBtnId) {
+    const trigger = document.getElementById(triggerBtnId);
+    const modal = document.getElementById(modalId);
+    const closeBtn = document.getElementById(closeBtnId);
+    const modalCloseBtn = modal.querySelector('.modal-close');
+    
+    trigger.addEventListener('click', () => {
+        modal.classList.add('active');
+    });
+    
+    closeBtn.addEventListener('click', () => {
+        modal.classList.remove('active');
+    });
+    
+    modalCloseBtn.addEventListener('click', () => {
+        modal.classList.remove('active');
+    });
+    
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+        }
+    });
+}
+
+// Setup modals
+setupModal('loginBtn', 'loginModal', 'closeLoginModal');
+setupModal('registerBtn', 'registerModal', 'closeRegisterModal');
+setupModal('newProjectBtn', 'newProjectModal', 'closeNewProjectModal');
+setupModal('newUserBtn', 'newUserModal', 'closeNewUserModal');
+
+// File Upload Preview
+document.querySelectorAll('.file-input').forEach((input, index) => {
+    input.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            const preview = this.closest('.card').querySelector('.image-preview');
+            // Fix: Get gallery items correctly
+            const galleryItems = document.querySelectorAll('#combinedGallery .gallery-item');
+            
+            // Make sure we don't exceed our array bounds
+            if (index < galleryItems.length) {
+                const galleryImage = galleryItems[index].querySelector('img');
+                
+                reader.onload = function(e) {
+                    // Clear placeholder
+                    preview.innerHTML = '';
+                    // Create image element
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    preview.appendChild(img);
+                    
+                    // Update gallery
+                    if (galleryImage) {
+                        galleryImage.src = e.target.result;
+                    }
+                };
+                
+                reader.readAsDataURL(this.files[0]);
+            }
+        }
+    });
+});
+
+// User and Project Selection
+document.querySelectorAll('.user-select').forEach((select, index) => {
+    select.addEventListener('change', function() {
+        const userText = this.options[this.selectedIndex].text;
+        const galleryItems = document.querySelectorAll('#combinedGallery .gallery-item');
+        
+        // Make sure we don't exceed our array bounds
+        if (index < galleryItems.length) {
+            const galleryUser = galleryItems[index].querySelector('.gallery-user');
+            if (galleryUser) {
+                galleryUser.textContent = userText;
+            }
+        }
+    });
+});
+
+document.querySelectorAll('.project-select').forEach((select, index) => {
+    select.addEventListener('change', function() {
+        const projectText = this.options[this.selectedIndex].text;
+        const galleryItems = document.querySelectorAll('#combinedGallery .gallery-item');
+        
+        // Make sure we don't exceed our array bounds
+        if (index < galleryItems.length) {
+            const galleryProject = galleryItems[index].querySelector('.gallery-project');
+            if (galleryProject) {
+                galleryProject.textContent = projectText;
+            }
+        }
+    });
+});
+
+// Upload Buttons
+document.querySelectorAll('.upload-btn').forEach((btn, index) => {
+    btn.addEventListener('click', function() {
+        const card = this.closest('.card');
+        const userSelect = card.querySelector('.user-select');
+        const projectSelect = card.querySelector('.project-select');
+        const fileInput = card.querySelector('.file-input');
+        const description = card.querySelector('textarea').value;
+        
+        if (userSelect.value === '' || projectSelect.value === '' || !fileInput.files[0]) {
+            alert('Please select a user, project, and image before uploading.');
+            return;
+        }
+        
+        // Simulate upload to server
+        const uploadProgress = document.createElement('div');
+        uploadProgress.style.width = '100%';
+        uploadProgress.style.height = '5px';
+        uploadProgress.style.backgroundColor = '#f0f0f0';
+        uploadProgress.style.borderRadius = '3px';
+        uploadProgress.style.overflow = 'hidden';
+        uploadProgress.style.marginTop = '10px';
+        
+        const progressBar = document.createElement('div');
+        progressBar.style.width = '0%';
+        progressBar.style.height = '100%';
+        progressBar.style.backgroundColor = '#27ae60'; // Fix: using direct color instead of var
+        progressBar.style.transition = 'width 1s ease';
+        
+        uploadProgress.appendChild(progressBar);
+        card.appendChild(uploadProgress);
+        
+        // Simulate progress
+        setTimeout(() => { progressBar.style.width = '30%'; }, 300);
+        setTimeout(() => { progressBar.style.width = '70%'; }, 800);
+        setTimeout(() => { 
+            progressBar.style.width = '100%';
+            
+            // Add to activity and history
+            const now = new Date();
+            const timeString = now.toLocaleString();
+            const userName = userSelect.options[userSelect.selectedIndex].text;
+            const projectName = projectSelect.options[projectSelect.selectedIndex].text;
+            
+            // Update activity table
+            const activityRow = document.createElement('tr');
+            activityRow.innerHTML = `
+                <td>
+                    <div style="display: flex; align-items: center;">
+                        <div class="avatar">${userName.split(' ').map(n => n[0]).join('')}</div>
+                        <span style="margin-left: 10px;">${userName}</span>
+                    </div>
+                </td>
+                <td>Uploaded an image</td>
+                <td>${projectName}</td>
+                <td>Just now</td>
+            `;
+            
+            const activityTable = document.getElementById('activityTable');
+            activityTable.insertBefore(activityRow, activityTable.firstChild);
+            
+            // Add to history - using URL.createObjectURL safely
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            
+            // Create object URL for the file
+            const imageUrl = URL.createObjectURL(fileInput.files[0]);
+            
+            historyItem.innerHTML = `
+                <div class="history-image">
+                    <img src="${imageUrl}" alt="Uploaded Image">
+                </div>
+                <div class="history-details">
+                    <div class="history-title">New Upload</div>
+                    <div class="history-meta">
+                        <span>Uploaded by: ${userName}</span> • 
+                        <span>Project: ${projectName}</span> • 
+                        <span>${timeString}</span>
+                    </div>
+                    <div style="margin-top: 5px;">
+                        ${description}
+                    </div>
+                </div>
+                <div>
+                    <button class="btn btn-sm btn-primary">View</button>
+                    <button class="btn btn-sm btn-danger">Delete</button>
+                </div>
+            `;
+            
+            const uploadHistory = document.getElementById('uploadHistory');
+            uploadHistory.insertBefore(historyItem, uploadHistory.firstChild);
+            
+            // Show success and remove progress bar
+            alert('Image uploaded successfully!');
+            card.removeChild(uploadProgress);
+            
+            // Clean up object URL to prevent memory leaks
+            setTimeout(() => {
+                URL.revokeObjectURL(imageUrl);
+            }, 1000);
+        }, 1200);
+    });
+});
+
+// Other image preview handlers (for modals)
+document.querySelectorAll('.file-upload input[type="file"]').forEach(input => {
+    input.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            const preview = this.closest('.form-group').previousElementSibling;
+            
+            if (preview && preview.classList.contains('image-preview')) {
+                reader.onload = function(e) {
+                    // Clear the placeholder
+                    preview.innerHTML = '';
+                    
+                    // Create image element
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    preview.appendChild(img);
+                };
+                
+                reader.readAsDataURL(this.files[0]);
+            }
+        }
+    });
+});
+    </script>
+</body>
+</html>
